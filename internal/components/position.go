@@ -2,18 +2,18 @@ package components
 
 import "fmt"
 
-type position struct {
+type Position struct {
 	X int
 	Y int
 }
 
-func NewPosition(x, y int) *position {
-	return &position{
+func NewPosition(x, y int) *Position {
+	return &Position{
 		X: x,
 		Y: y,
 	}
 }
 
-func (p *position) String() string {
+func (p *Position) String() string {
 	return fmt.Sprintf("Position (%d, %d)", p.X, p.Y)
 }

@@ -1,47 +1,46 @@
 package ecs
 
 import (
-	"errors"
+	"fmt"
 	"reflect"
 )
 
 type ComponentManager struct {
-	components map[Entity]map[reflect.Type]any
+	components map[reflect.Type]map[Entity]any
 }
 
 func NewComponentManager() *ComponentManager {
 	return &ComponentManager{
-		components: make(map[Entity]map[reflect.Type]any),
+		components: make(map[reflect.Type]map[Entity]any),
 	}
 }
 
-func (cm *ComponentManager) AddComponent(e Entity, comp any) {
-	compType := reflect.TypeOf(comp)
-	if _, ok := cm.components[e]; !ok {
-		cm.components[e] = make(map[reflect.Type]any)
+func (cm *ComponentManager) AddComponent(e Entity, component any) {
+	componentType := reflect.TypeOf(component)
+	if _, ok := cm.components[componentType.Elem()]; !ok {
+		cm.components[componentType.Elem()] = make(map[Entity]any)
 	}
-	cm.components[e][compType] = comp
+	cm.components[componentType.Elem()][e] = component
 }
 
-func (cm *ComponentManager) GetComponent(e Entity, comp any) (any, error) {
-	compMapping, ok := cm.components[e]
+func (cm *ComponentManager) GetComponent(component any) map[Entity]any {
+	entityComponentMapping, ok := cm.components[reflect.TypeOf(component)]
 	if !ok {
-		return nil, errors.New("Entity doesn't exist")
+		return nil
 	}
 
-	component, ok := compMapping[reflect.TypeOf(comp)]
-	if !ok {
-		return nil, errors.New("Component doesn't exist")
-	}
-
-	return component, nil
+	return entityComponentMapping
 }
 
-func (cm *ComponentManager) RemoveComponent(e Entity, comp any) {
-	compMapping, ok := cm.components[e]
+func (cm *ComponentManager) RemoveComponentFromEntity(e Entity, component any) {
+	compMapping, ok := cm.components[reflect.TypeOf(component)]
 	if !ok {
 		return
 	}
-	delete(compMapping, reflect.TypeOf(comp))
 
+	delete(compMapping, e)
+}
+
+func (cm *ComponentManager) PrintComponent() {
+	fmt.Println(cm.components)
 }

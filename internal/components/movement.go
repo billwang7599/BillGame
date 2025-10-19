@@ -1,5 +1,7 @@
 package components
 
+import "fmt"
+
 type Direction int
 
 const (
@@ -11,11 +13,19 @@ const (
 )
 
 type Move struct {
-	Direction Direction
+	Direction  Direction
+	Speed      int
+	Continuous bool
 }
 
-func NewMove(direction Direction) *Move {
+func NewMove(direction Direction, speed int, continuous bool) *Move {
 	return &Move{
-		Direction: direction,
+		Direction:  direction,
+		Speed:      speed,
+		Continuous: continuous,
 	}
+}
+
+func (m *Move) String() string {
+	return fmt.Sprintf("Direction: %d || Speed: %d", m.Direction, m.Speed)
 }

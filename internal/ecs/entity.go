@@ -3,16 +3,14 @@ package ecs
 type Entity uint64
 
 type EntityManager struct {
-	nextID       Entity
-	freeIDs      []Entity
-	liveEntities map[Entity]bool
+	nextID  Entity
+	freeIDs []Entity
 }
 
 func NewEntityManager() *EntityManager {
 	return &EntityManager{
-		nextID:       1,
-		freeIDs:      make([]Entity, 0),
-		liveEntities: make(map[Entity]bool),
+		nextID:  1,
+		freeIDs: make([]Entity, 0),
 	}
 }
 
@@ -29,23 +27,12 @@ func (em *EntityManager) NewEntity() Entity {
 		em.nextID++
 	}
 
-	// If no IDs are in the free list, create a new one
-	em.liveEntities[id] = true
 	return id
 }
 
 func (em *EntityManager) DeleteEntity(entity Entity, cm *ComponentManager) {
 	em.freeIDs = append(em.freeIDs, entity)
-	delete(cm.components, entity)
-	delete(em.liveEntities, entity)
-}
-
-func (em *EntityManager) GetLiveEntities() []Entity {
-	sum := make([]Entity, 0, len(em.liveEntities))
-	for key, val := range em.liveEntities {
-		if val {
-			sum = append(sum, key)
-		}
+	for _, entityComponentMapping := range cm.components {
+		delete(entityComponentMapping, entity)
 	}
-	return sum
 }
