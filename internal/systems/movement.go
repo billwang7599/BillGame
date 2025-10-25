@@ -26,17 +26,18 @@ func (ms *MovementSystem) Update() {
 			continue
 		}
 		p := position.(*components.Position)
+		speed := int64(move.Speed)
 		switch direction {
 		case components.None:
 			continue
 		case components.Down:
-			p.Y += move.Speed
+			p.Y += speed
 		case components.Up:
-			p.Y -= move.Speed
+			p.Y -= speed
 		case components.Left:
-			p.X -= move.Speed
+			p.X -= speed
 		case components.Right:
-			p.X += move.Speed
+			p.X += speed
 		default:
 		}
 

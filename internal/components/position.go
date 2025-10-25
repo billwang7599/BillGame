@@ -3,11 +3,11 @@ package components
 import "fmt"
 
 type Position struct {
-	X int
-	Y int
+	X int64
+	Y int64
 }
 
-func NewPosition(x, y int) *Position {
+func NewPosition(x, y int64) *Position {
 	return &Position{
 		X: x,
 		Y: y,

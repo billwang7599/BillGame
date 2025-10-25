@@ -14,11 +14,11 @@ const (
 
 type Move struct {
 	Direction  Direction
-	Speed      int
+	Speed      int32
 	Continuous bool
 }
 
-func NewMove(direction Direction, speed int, continuous bool) *Move {
+func NewMove(direction Direction, speed int32, continuous bool) *Move {
 	return &Move{
 		Direction:  direction,
 		Speed:      speed,

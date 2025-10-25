@@ -56,6 +56,7 @@ func (is *InputSystem) Update() {
 }
 
 func (is *InputSystem) MovementUpdate(key rune) {
+	controllableEntities := is.world.GetEntitiesOfComponent(components.Controllable{})
 	entityMapping := is.world.GetEntitiesOfComponent(components.Move{})
 	dir := components.None
 	switch key {
@@ -70,8 +71,18 @@ func (is *InputSystem) MovementUpdate(key rune) {
 	default:
 	}
 
-	for _, move := range entityMapping {
-		move := move.(*components.Move)
+	for entity, _ := range controllableEntities {
+		moveComponent, ok := entityMapping[entity]
+		if !ok {
+			continue
+		}
+		move := moveComponent.(*components.Move)
 		move.Direction = dir
+		packet := ecs.PlayerInputPacket{
+			Type:     ecs.PlayerInputPacketType,
+			Key:      key,
+			EntityId: entity,
+		}
+		is.world.AddToPacketQueue(packet)
 	}
 }

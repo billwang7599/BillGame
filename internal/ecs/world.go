@@ -1,26 +1,51 @@
 package ecs
 
-import "reflect"
+import (
+	"net"
+	"reflect"
+)
 
 // World is the central orchestrator, containing all the managers.
 type World struct {
-	entities   *EntityManager
-	components *ComponentManager
-	systems    *SystemManager
-	Running    bool
+	entities    *EntityManager
+	components  *ComponentManager
+	systems     *SystemManager
+	Clients     map[string]Entity // map client ip string to their entity
+	Running     bool
+	PacketQueue []any
+	Conn        *net.UDPConn // shared UDP connection for send/receive
 }
 
 // NewWorld creates an initialized World with all its managers ready to go.
-func NewWorld() *World {
-	return &World{
-		entities:   NewEntityManager(),
-		components: NewComponentManager(),
-		systems:    NewSystemManager(),
-		Running:    true,
+// Takes currentPort and serverAddr (ip:port) as strings.
+func NewWorld(currentPort string, serverAddr string) *World {
+	addr, err := net.ResolveUDPAddr("udp", ":"+currentPort)
+	if err != nil {
+		panic("Error resolving UDP address: " + err.Error())
 	}
+	conn, err := net.ListenUDP("udp", addr)
+	if err != nil {
+		panic("Error listening: " + err.Error())
+	}
+
+	world := &World{
+		entities:    NewEntityManager(),
+		components:  NewComponentManager(),
+		systems:     NewSystemManager(),
+		Clients:     make(map[string]Entity),
+		PacketQueue: make([]any, 0),
+		Running:     true,
+		Conn:        conn,
+	}
+	// Add server address to Clients map
+	world.Clients[serverAddr] = 0
+	return world
 }
 
-// --- Facade Methods ---
+func (w *World) AddToPacketQueue(packet any) {
+	w.PacketQueue = append(w.PacketQueue, packet)
+}
+
 // These methods provide a clean API and hide the internal managers.
 func (w *World) Print() {
 	w.components.PrintComponent()

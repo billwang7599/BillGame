@@ -33,7 +33,7 @@ func (rs *RenderSystem) Update() {
 		}
 		sprite := sComponent.(*components.Sprite)
 		position := pComponent.(*components.Position)
-		rs.screen.SetContent(position.X, position.Y, sprite.Char, nil, tcell.StyleDefault)
+		rs.screen.SetContent(int(position.X), int(position.Y), sprite.Char, nil, tcell.StyleDefault)
 	}
 	rs.screen.Show()
 }
