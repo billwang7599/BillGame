@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	port := flag.String("port", "3002", "UDP port to send and receive packets on")
+	port := flag.String("port", "4000", "UDP port to send and receive packets on")
 	serverAddr := flag.String("server-addr", "localhost:3000", "Server address ip:port")
 	flag.Parse()
 	fmt.Println("hello im client")
@@ -28,11 +28,11 @@ func main() {
 	// creating world
 
 	world := ecs.NewWorld(*port, *serverAddr)
-	world.AddSystem(systems.NewReceiveSystem(world.Conn, world)) // use shared UDPConn
+	world.AddSystem(systems.NewReceiveSystem(world)) // use shared UDPConn
 	world.AddSystem(systems.NewInputSystem(world, screen))
 	world.AddSystem(systems.NewMovementSystem(world))
 	world.AddSystem(systems.NewRenderSystem(world, screen))
-	world.AddSystem(systems.NewSendSystem(world, *serverAddr)) // use shared UDPConn and server address
+	world.AddSystem(systems.NewSendSystem(world)) // use shared UDPConn and server address
 
 	entity := world.NewEntity()
 	world.AddComponent(entity, components.NewMove(components.None, 1, false))

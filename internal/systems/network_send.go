@@ -10,22 +10,13 @@ import (
 )
 
 type NetworkSendSystem struct {
-	conn  *net.UDPConn
 	world *ecs.World
 }
 
-func NewSendSystem(world *ecs.World, serverAddrStr string) *NetworkSendSystem {
-	serverAddr, err := net.ResolveUDPAddr("udp", serverAddrStr)
-	if err != nil {
-		log.Fatal(err)
-	}
-	world.Clients[serverAddr.String()] = 0
-
-	system := NetworkSendSystem{
-		conn:  world.Conn,
+func NewSendSystem(world *ecs.World) *NetworkSendSystem {
+	return &NetworkSendSystem{
 		world: world,
 	}
-	return &system
 }
 
 func (nss *NetworkSendSystem) Update() {
@@ -44,15 +35,15 @@ func (nss *NetworkSendSystem) Update() {
 		for clientAddrStr := range nss.world.Clients {
 			addr, err := net.ResolveUDPAddr("udp", clientAddrStr)
 			if err != nil {
-				log.Printf("Failed to resolve client address %v: %v", clientAddrStr, err)
+				// log.Printf("Failed to resolve client address %v: %v", clientAddrStr, err)
 				continue
 			}
-			_, err = nss.conn.WriteToUDP(bytesToSend, addr)
-			if err != nil {
-				log.Printf("Failed to send to %v: %v", clientAddrStr, err)
-			} else {
-				log.Printf("Sent packet of %d bytes to %v", len(bytesToSend), clientAddrStr)
-			}
+			_, err = nss.world.Conn.WriteToUDP(bytesToSend, addr)
+			// if err != nil {
+			// 	log.Printf("Failed to send to %v: %v", clientAddrStr, err)
+			// } else {
+			// 	log.Printf("Sent packet of %d bytes to %v", len(bytesToSend), clientAddrStr)
+			// }
 		}
 	}
 

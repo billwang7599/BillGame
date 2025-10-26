@@ -14,10 +14,10 @@ func main() {
 	receivePort := "3000"
 	serverAddr := "localhost:3003"
 	world := ecs.NewWorld(receivePort, serverAddr)
-	world.AddSystem(systems.NewReceiveSystem(world.Conn, world)) // use shared UDPConn for receive
+	world.AddSystem(systems.NewReceiveSystem(world)) // use shared UDPConn for receive
 	world.AddSystem(systems.NewMovementSystem(world))
 	world.AddSystem(systems.NewSendStateSystem(world))
-	world.AddSystem(systems.NewSendSystem(world, serverAddr)) // use shared UDPConn for send
+	world.AddSystem(systems.NewSendSystem(world)) // use shared UDPConn for send
 
 	entity := world.NewEntity()
 	world.AddComponent(entity, components.NewMove(components.None, 1, false))
